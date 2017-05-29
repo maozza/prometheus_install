@@ -1,2 +1,2 @@
 # prometheus_install
-install prometheus and exporters 
+ansible playbook that install prometheus and exporters

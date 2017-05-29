@@ -1,0 +1,65 @@
+---
+- hosts: "{{ hosts }}"
+  vars:
+    install_dir: "/opt/prometheus/node_exporter"
+    node_exporter_version: "0.14.0"
+    download_link: "https://github.com/prometheus/node_exporter/releases/download/v{{ node_exporter_version }}/node_exporter-{{ node_exporter_version }}.linux-amd64.tar.gz"
+    user: "prometheus"
+    group: "prometheus"
+    shell: "/sbin/nologin"
+    uid: "1555"
+    gid: "1555"
+  tasks:
+  - name: create directory
+    file:
+      dest: "{{ install_dir }}"
+      state: directory
+      mode: 0755
+      recurse: yes
+
+  - unarchive:
+      src: "{{ download_link }}"
+      dest: "{{ install_dir }}"
+      remote_src: True
+    register: resp
+
+  - debug: var=resp
+
+  - file:
+      src: "{{ install_dir }}/node_exporter-{{ node_exporter_version }}/node_exporter"
+      dest: "{{ install_dir }}/node_exporter"
+      state: link
+
+  - name: create systemctl service
+    template:
+      src: templates/node_exporter.service.j2
+      dest: /etc/systemd/system/node_exporter.service
+
+  - name: add group
+    group:
+      name: "{{ group }}"
+      state: present
+      gid: "{{ gid }}"
+
+  - name: add user
+    user:
+      name: "{{ user }}"
+      group: "{{ group }}"
+      uid: "{{ uid }}"
+
+  - name: restart service
+    service:
+      name: node_exporter
+      enabled: yes
+      state: started
+  #- systend:
+  # systemd: state=started
+
+
+
+
+   #enabled=yes daemon_reload=yes
+
+
+
+

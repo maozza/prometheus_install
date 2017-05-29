@@ -1,2 +1,2 @@
 # prometheus_install
-ansible playbook that install prometheus and exporters
+ansible playbook, download and install node_exporter with support for centos6 and centos7

@@ -1,0 +1,63 @@
+#!/bin/bash
+#
+# node_exporter    Startup script for the node_exporter statistics gathering daemon
+# chkconfig: - 86 15
+# description: node_exporter is a statistics gathering daemon used to integrate with prometheus time series \
+#   system information ie. cpu, memory, disk, network
+# processname: node_exporter
+# config: /etc/sysconfig/node_exporter
+
+# Source function library.
+. /etc/init.d/functions
+
+RETVAL=0
+ARGS=""
+prog="node_exporter"
+prog_dir="{{ install_dir }}"
+LOG_FILE="{{ log_dir }}/${prog}.log"
+USER="{{ user }}"
+command="${prog_dir}/${prog} "${ARGS}" >${LOG_FILE} 2>&1 &"
+
+
+if [ -r /etc/sysconfig/$prog ]; then
+	. /etc/sysconfig/$prog
+fi
+
+start () {
+	echo -n $"Starting $prog: "
+	daemon --user ${USER} $command
+	RETVAL=$?
+	echo
+	[ $RETVAL -eq 0 ] && touch /var/lock/subsys/$prog
+}
+stop () {
+	echo -n $"Stopping $prog: "
+	killproc $prog
+	RETVAL=$?
+	echo
+	[ $RETVAL -eq 0 ] && rm -f /var/lock/subsys/$prog
+}
+# See how we were called.
+case "$1" in
+  start)
+	start
+	;;
+  stop)
+	stop
+	;;
+  status)
+	status $prog
+	;;
+  restart|reload)
+	stop
+	start
+	;;
+  condrestart)
+	[ -f /var/lock/subsys/$prog ] && stop && start || :
+	;;
+  *)
+	echo $"Usage: $0 {start|stop|status|restart|reload|condrestart}"
+	exit 1
+esac
+
+exit $?

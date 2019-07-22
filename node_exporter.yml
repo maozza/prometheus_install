@@ -2,7 +2,7 @@
 - hosts: "{{ hosts }}"
   vars:
     install_dir: "/opt/prometheus/node_exporter"
-    node_exporter_version: "0.14.0"
+    node_exporter_version: "0.17.0"
     download_link: "https://github.com/prometheus/node_exporter/releases/download/v{{ node_exporter_version }}/node_exporter-{{ node_exporter_version }}.linux-amd64.tar.gz"
     user: "prometheus"
     group: "prometheus"
@@ -50,7 +50,7 @@
     template:
       src: templates/node_exporter.service.j2
       dest: /etc/systemd/system/node_exporter.service
-    when: ansible_distribution_major_version == "7" and ansible_distribution == "CentOS"
+    #when: (ansible_distribution_major_version == "7" and ansible_distribution == "CentOS")
 
 
   - name: setup init
@@ -65,7 +65,7 @@
     service:
       name: node_exporter
       enabled: yes
-      state: started
+      state: restarted
 
 
 

@@ -1,6 +1,13 @@
 # prometheus_install
-ansible playbook, download and install node_exporter with support for centos6 and centos7
-## example
+ansible playbook, download and install node_exporter or mongo exporter
+
+## examples
+
+### mongo exporter
 ``` 
-ansible-playbook node_exporter.yml -e "hosts=polopoly"
+ansible-playbook mongodb-exporter.yml -e"MONGO_USER=root MONGO_PASSWORD=${PASS} MONGO_PORT=27017" -i hosts
+```
+### node exporter
+```
+ansible-playbook node_exporter.yml -i hosts
 ```

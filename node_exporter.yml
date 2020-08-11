@@ -1,8 +1,8 @@
 ---
-- hosts: "{{ hosts }}"
+- hosts: all
   vars:
     install_dir: "/opt/prometheus/node_exporter"
-    node_exporter_version: "0.17.0"
+    node_exporter_version: "1.0.1"
     download_link: "https://github.com/prometheus/node_exporter/releases/download/v{{ node_exporter_version }}/node_exporter-{{ node_exporter_version }}.linux-amd64.tar.gz"
     user: "prometheus"
     group: "prometheus"

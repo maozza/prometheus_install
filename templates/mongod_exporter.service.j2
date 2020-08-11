@@ -1,0 +1,11 @@
+[Unit]
+Description=MongoDB Exporter
+After=network.target
+
+[Service]
+EnvironmentFile={{ install_dir }}/env
+ExecStart={{ install_dir }}/mongodb_exporter  --mongodb.uri ${MONGO_URI}
+User={{user}}
+Group={{group}}
+[Install]
+WantedBy=default.target

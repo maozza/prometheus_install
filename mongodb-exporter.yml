@@ -1,0 +1,63 @@
+---
+- hosts: all
+  vars:
+    install_dir: "/opt/prometheus/mongodb_exporter"
+    download_link: "https://github.com/percona/mongodb_exporter/releases/download/v0.11.0/mongodb_exporter-0.11.0.linux-amd64.tar.gz
+"
+    user: "prometheus"
+    group: "prometheus"
+    uid: "1555"
+    gid: "1555"
+
+  tasks:
+
+  - name: create directory
+    file:
+      dest: "{{ item }}"
+      state: directory
+      mode: 0755
+      recurse: yes
+    with_items:
+      - "{{ install_dir }}"
+
+
+
+  - unarchive:
+      src: "{{ download_link }}"
+      dest: "{{ install_dir }}"
+      remote_src: True
+
+
+  - name: add group
+    group:
+      name: "{{ group }}"
+      state: present
+      gid: "{{ gid }}"
+
+  - name: add user
+    user:
+      name: "{{ user }}"
+      group: "{{ group }}"
+      uid: "{{ uid }}"
+
+  - name: setup systemctl service
+    template:
+      src: templates/mongod_exporter.service.j2
+      dest: /etc/systemd/system/mongod_exporter.service
+
+
+  - name: setup systemctl service
+    template:
+      src: templates/mongod_env.j2
+      dest: "{{ install_dir }}/env"
+      mode: '600'
+      owner: "{{user}}"
+      group: "{{group}}"   
+
+
+  - name: restart service
+    systemd:
+      name: mongod_exporter
+      enabled: yes
+      state: restarted
+      daemon_reload: yes
